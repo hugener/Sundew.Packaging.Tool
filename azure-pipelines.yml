@@ -18,7 +18,7 @@ variables:
   pushSource: 'null'
 
 steps:
-- script: dotnet build $(solutionPath) --verbosity normal --configuration $(buildConfiguration) -p:'SppSourceName=$(Build.SourceBranch)' -p:'SppProductionSource=refs/heads/master|$(source)' -p:'SppIntegrationSource=refs/heads/release/.+|$(source)' -p:'SppAllowLocalSource=false' -p:'SppEnablePublish=false' -p:'SppPublishLogFormats=##vso[task.setvariable variable=pushSource]{2}'
+- script: dotnet build $(solutionPath) --verbosity normal --configuration $(buildConfiguration) -p:'SppSourceName=$(Build.SourceBranch)' -p:'SppProductionSource=refs/heads/main|$(source)' -p:'SppIntegrationSource=refs/heads/release/.+|$(source)' -p:'SppAllowLocalSource=false' -p:'SppEnablePublish=false' -p:'SppPublishLogFormats=##vso[task.setvariable variable=pushSource]{2}'
   displayName: 'dotnet build $(buildConfiguration)'
 
 - script: dotnet test $(solutionPath) --verbosity normal --configuration $(buildConfiguration) --no-build
