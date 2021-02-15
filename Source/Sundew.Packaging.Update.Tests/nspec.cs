@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.Tests
+namespace Sundew.Packaging.Update.Tests
 {
     using System.Linq;
     using FluentAssertions;

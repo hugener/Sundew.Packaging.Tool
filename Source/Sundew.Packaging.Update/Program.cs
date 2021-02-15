@@ -5,14 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update
+namespace Sundew.Packaging.Update
 {
     using System;
     using System.IO.Abstractions;
     using System.Threading.Tasks;
     using Sundew.Base.Computation;
-    using Sundew.Build.Update.MsBuild.NuGet;
     using Sundew.CommandLine;
+    using Sundew.Packaging.Update.Diagnostics;
+    using Sundew.Packaging.Update.MsBuild.NuGet;
 
     public static class Program
     {
@@ -37,7 +38,7 @@ namespace Sundew.Build.Update
         private static async ValueTask<Result<int, ParserError<int>>> ExecuteArguments(Arguments arguments)
         {
             var consoleReporter = new ConsoleReporter(arguments.Verbose);
-            var packageUpdaterFacade = new PackageUpdaterFacade(new FileSystem(), new NuGetPackageVersionFetcher(), consoleReporter, consoleReporter, consoleReporter);
+            var packageUpdaterFacade = new PackageUpdaterFacade(new FileSystem(), new NuGetPackageVersionFetcher(), new ProcessRunner(), consoleReporter, consoleReporter, consoleReporter, consoleReporter);
             await packageUpdaterFacade.UpdatePackagesInProjectsAsync(arguments);
             return Result.Success(0);
         }

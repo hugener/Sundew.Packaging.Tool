@@ -5,15 +5,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.MsBuild.NuGet
+namespace Sundew.Packaging.Update.MsBuild.NuGet
 {
     using global::NuGet.Versioning;
 
-    public record PackageId(string Id, NuGetVersion? NuGetVersion = null);
+    public record PackageId(string Id, NuGetVersion? NuGetVersion = null, bool? UseMajorMinorSearchMode = null);
 
     public record PackageIdAndVersion(string Id, NuGetVersion NuGetVersion);
 
-    public record PackageUpdateSuggestion(string Id, NuGetVersion NuGetVersion, NuGetVersion? PinnedNuGetVersion) : PackageIdAndVersion(Id, NuGetVersion);
+    public record PackageUpdateSuggestion(
+        string Id,
+        NuGetVersion NuGetVersion,
+        NuGetVersion? PinnedNuGetVersion,
+        bool? UseMajorMinorSearchMode) : PackageIdAndVersion(Id, NuGetVersion);
 
     public record PackageUpdate(string Id, NuGetVersion NuGetVersion, NuGetVersion UpdatedNuGetVersion) : PackageIdAndVersion(Id, NuGetVersion);
+
+    public record PinnedNuGetVersion(NuGetVersion NuGetVersion, bool UseMajorMinorSearchMode);
 }

@@ -5,11 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update
+namespace Sundew.Packaging.Update
 {
     using System;
     using System.Collections.Generic;
-    using Sundew.Build.Update.MsBuild;
+    using Sundew.Packaging.Update.MsBuild;
 
     public interface IPackageUpdaterFacadeReporter
     {
@@ -17,7 +17,7 @@ namespace Sundew.Build.Update
 
         void UpdatingProject(string project);
 
-        void CompletedPackageUpdate(List<MsBuildProject> msBuildProjects, TimeSpan totalTime);
+        void CompletedPackageUpdate(List<MsBuildProject> msBuildProjects, bool argumentsSkipRestore, TimeSpan totalTime);
 
         void Exception(Exception exception);
     }

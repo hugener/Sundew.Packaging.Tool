@@ -5,15 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.MsBuild
+namespace Sundew.Packaging.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
-    using Sundew.Build.Update.MsBuild.NuGet;
-    using Sundew.Build.Update.RegularExpression;
+    using Sundew.Packaging.Update.MsBuild.NuGet;
+    using Sundew.Packaging.Update.RegularExpression;
 
     public class MsBuildProjectPackagesParser
     {
@@ -43,7 +43,7 @@ namespace Sundew.Build.Update.MsBuild
 
                 foreach (Match match in regex.Matches(projectContent))
                 {
-                    absolutePackageIds.Add(new PackageUpdateSuggestion(match.Groups[IdGroupName].Value, NuGetVersion.Parse(match.Groups[VersionGroupName].Value), packageId.NuGetVersion));
+                    absolutePackageIds.Add(new PackageUpdateSuggestion(match.Groups[IdGroupName].Value, NuGetVersion.Parse(match.Groups[VersionGroupName].Value), packageId.NuGetVersion, packageId.UseMajorMinorSearchMode));
                 }
             }
 

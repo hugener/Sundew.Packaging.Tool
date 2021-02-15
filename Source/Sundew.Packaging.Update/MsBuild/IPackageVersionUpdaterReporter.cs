@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.MsBuild
+namespace Sundew.Packaging.Update.MsBuild
 {
     public interface IPackageVersionUpdaterReporter
     {

@@ -5,15 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update
+namespace Sundew.Packaging.Update
 {
     using System;
     using System.Collections.Generic;
-    using global::NuGet.Versioning;
-    using Sundew.Build.Update.MsBuild;
-    using Sundew.Build.Update.MsBuild.NuGet;
+    using NuGet.Versioning;
+    using Sundew.Packaging.Update.MsBuild;
+    using Sundew.Packaging.Update.MsBuild.NuGet;
 
-    public class ConsoleReporter : IPackageVersionUpdaterReporter, IPackageUpdaterFacadeReporter, IPackageVersionSelectorReporter
+    public class ConsoleReporter : IPackageVersionUpdaterReporter, IPackageUpdaterFacadeReporter, IPackageVersionSelectorReporter, IPackageRestorerReporter
     {
         private const string ModifiedVerbose = "Updated";
         private const string Modified = "*";
@@ -51,9 +51,9 @@ namespace Sundew.Build.Update
             }
         }
 
-        public void CompletedPackageUpdate(List<MsBuildProject> msBuildProjects, TimeSpan totalTime)
+        public void CompletedPackageUpdate(List<MsBuildProject> msBuildProjects, bool skippedRestore, TimeSpan totalTime)
         {
-            Console.WriteLine($"Completed updating {msBuildProjects.Count} projects in: {totalTime}");
+            Console.WriteLine($"Completed updating{(skippedRestore ? string.Empty : " and restored")}: {msBuildProjects.Count} projects in: {totalTime}");
         }
 
         public void Exception(Exception exception)
@@ -62,6 +62,11 @@ namespace Sundew.Build.Update
             Console.BackgroundColor = ConsoleColor.Red;
             Console.WriteLine(exception.ToString());
             Console.BackgroundColor = backgroundColor;
+        }
+
+        public void ReportMessage(string message)
+        {
+            Console.WriteLine(message);
         }
 
         public void PackageUpdateSelected(string packageId, NuGetVersion? oldNuGetVersion, NuGetVersion newNuGetVersion)

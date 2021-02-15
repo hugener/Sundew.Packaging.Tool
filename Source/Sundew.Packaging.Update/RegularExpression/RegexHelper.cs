@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.RegularExpression
+namespace Sundew.Packaging.Update.RegularExpression
 {
     public static class RegexHelper
     {

@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update
+namespace Sundew.Packaging.Update
 {
     using System;
     using System.Collections.Generic;
@@ -13,21 +13,31 @@ namespace Sundew.Build.Update
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading.Tasks;
-    using Sundew.Build.Update.MsBuild;
-    using Sundew.Build.Update.MsBuild.NuGet;
+    using Sundew.Packaging.Update.Diagnostics;
+    using Sundew.Packaging.Update.MsBuild;
+    using Sundew.Packaging.Update.MsBuild.NuGet;
 
     public sealed class PackageUpdaterFacade
     {
         private readonly IFileSystem fileSystem;
+        private readonly PackageRestorer packageRestorer;
         private readonly IPackageUpdaterFacadeReporter packageUpdaterFacadeReporter;
         private readonly PackageVersionUpdater packageVersionUpdater;
         private readonly PackageVersionSelector packageVersionSelector;
         private readonly MsBuildProjectPackagesParser msBuildProjectPackagesParser;
         private readonly MsBuildProjectFileSearcher msBuildProjectFileSearcher;
 
-        public PackageUpdaterFacade(IFileSystem fileSystem, INuGetPackageVersionFetcher nuGetPackageVersionFetcher, IPackageUpdaterFacadeReporter packageUpdaterFacadeReporter, IPackageVersionUpdaterReporter packageVersionUpdaterReporter, IPackageVersionSelectorReporter packageVersionSelectorReporter)
+        public PackageUpdaterFacade(
+            IFileSystem fileSystem,
+            INuGetPackageVersionFetcher nuGetPackageVersionFetcher,
+            IProcessRunner processRunner,
+            IPackageUpdaterFacadeReporter packageUpdaterFacadeReporter,
+            IPackageVersionUpdaterReporter packageVersionUpdaterReporter,
+            IPackageVersionSelectorReporter packageVersionSelectorReporter,
+            IPackageRestorerReporter packageRestorerReporter)
         {
             this.fileSystem = fileSystem;
+            this.packageRestorer = new PackageRestorer(processRunner, packageRestorerReporter);
             this.packageUpdaterFacadeReporter = packageUpdaterFacadeReporter;
             this.packageVersionUpdater = new PackageVersionUpdater(packageVersionUpdaterReporter);
             this.packageVersionSelector = new PackageVersionSelector(nuGetPackageVersionFetcher, packageVersionSelectorReporter);
@@ -48,7 +58,7 @@ namespace Sundew.Build.Update
                     this.packageUpdaterFacadeReporter.UpdatingProject(project);
 
                     var msBuildProject = await this.msBuildProjectPackagesParser.GetPackages(project, arguments.PackageIds);
-                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, arguments.NuGetVersion, rootDirectory, arguments.AllowPrerelease, arguments.Source);
+                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, arguments.PinnedNuGetVersion, rootDirectory, arguments.AllowPrerelease, arguments.Source);
                     var result = this.packageVersionUpdater.TryUpdateAsync(msBuildProject, packageUpdates);
                     if (result)
                     {
@@ -60,6 +70,11 @@ namespace Sundew.Build.Update
                 {
                     await this.fileSystem.File.WriteAllTextAsync(changedProject.Path, changedProject.ProjectContent);
                 }
+
+                if (changedProjects.Count > 0 && !arguments.SkipRestore)
+                {
+                    await this.packageRestorer.RestoreAsync(rootDirectory, arguments.Verbose);
+                }
             }
             catch (Exception e)
             {
@@ -67,7 +82,7 @@ namespace Sundew.Build.Update
                 return;
             }
 
-            this.packageUpdaterFacadeReporter.CompletedPackageUpdate(changedProjects, stopwatch.Elapsed);
+            this.packageUpdaterFacadeReporter.CompletedPackageUpdate(changedProjects, arguments.SkipRestore, stopwatch.Elapsed);
         }
     }
 }

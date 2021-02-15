@@ -6,20 +6,21 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #pragma warning disable 8602
-namespace Sundew.Build.Update.Tests
+namespace Sundew.Packaging.Update.Tests
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text;
     using System.Threading;
-    using global::NuGet.Versioning;
     using Moq;
+    using NuGet.Versioning;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
-    using Sundew.Build.Update.MsBuild;
-    using Sundew.Build.Update.MsBuild.NuGet;
+    using Sundew.Packaging.Update.Diagnostics;
+    using Sundew.Packaging.Update.MsBuild;
+    using Sundew.Packaging.Update.MsBuild.NuGet;
 
     public class describe_package_updater_facade : nspec
     {
@@ -30,12 +31,15 @@ namespace Sundew.Build.Update.Tests
                  this.fileSystem = New.Mock<IFileSystem>().SetDefaultValue(DefaultValue.Mock);
                  this.nuGetPackageVersionFetcher = New.Mock<INuGetPackageVersionFetcher>();
                  this.packageVersionSelectorReporter = New.Mock<IPackageVersionSelectorReporter>();
+                 this.processRunner = New.Mock<IProcessRunner>();
                  this.packageUpdaterFacade = new PackageUpdaterFacade(
                      this.fileSystem,
                      this.nuGetPackageVersionFetcher,
+                     this.processRunner,
                      New.Mock<IPackageUpdaterFacadeReporter>(),
                      New.Mock<IPackageVersionUpdaterReporter>(),
-                     this.packageVersionSelectorReporter);
+                     this.packageVersionSelectorReporter,
+                     New.Mock<IPackageRestorerReporter>());
 
                  TestData.GetPackages().ForEach(x =>
                  {
@@ -99,6 +103,8 @@ namespace Sundew.Build.Update.Tests
                                         It.IsAny<NuGetVersion>(),
                                         It.IsAny<NuGetVersion>()),
                                     Times.Never);
+
+                            this.it["should run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Once);
                         };
 
                         this.context["and does allow update to prerelease"] = () =>
@@ -131,6 +137,8 @@ namespace Sundew.Build.Update.Tests
                                         It.IsAny<NuGetVersion>(),
                                         It.IsAny<NuGetVersion>()),
                                     Times.Never);
+
+                            this.it["should run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Once);
                         };
 
                         this.context["and pins Sundew.Base version to 6.0.0"] = () =>
@@ -165,6 +173,64 @@ namespace Sundew.Build.Update.Tests
                                         It.IsAny<NuGetVersion>(),
                                         It.IsAny<NuGetVersion>()),
                                     Times.Never);
+
+                            this.it["should run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Once);
+
+                            this.context["and skip-restore is set"] = () =>
+                            {
+                                this.beforeEach = () => this.arguments = new Arguments(this.arguments.PackageIds.ToList(), this.arguments.Projects.ToList(), skipRestore: true);
+
+                                this.it["should not run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Never);
+                            };
+                        };
+
+                        this.context["and pins Sundew.Base version to 5.1 latest prerelease"] = () =>
+                        {
+                            this.beforeEach = () => this.arguments = new Arguments(new List<PackageId> { new("Sundew.Base", NuGetVersion.Parse("5.1"), true) }, this.arguments.Projects.ToList(), allowPrerelease: true);
+
+                            TestData.SundewCommandLineProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
+                                () => this.fileSystem?.File.Verify(
+                                    f => f.WriteAllTextAsync(x.Path, TestData.SundewCommandLineData.MajorMinorPinnedSundewBaseUpdatedSource, CancellationToken.None),
+                                    Times.Once));
+
+                            TestData.TransparentMoqProject.Assert(x => this.it[$@"should not write to: {x.Path}"] =
+                                () => this.fileSystem?.File.Verify(
+                                        f => f.WriteAllTextAsync(x.Path, It.IsAny<string>(), CancellationToken.None),
+                                        Times.Never));
+
+                            TestData.SundewBuildPublishProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
+                                () => this.fileSystem?.File.Verify(
+                                        f => f.WriteAllTextAsync(x.Path, TestData.SundewPackagingPublishData.MajorMinorPinnedSundewBaseUpdatedSource, CancellationToken.None),
+                                        Times.Once));
+
+                            TestData.SundewBasePackageUpdateForSundewPackagingPublish.Assert(x =>
+                                this.it[$"should update package: {x.Id} from {x.NuGetVersion} to {x.UpdatedNuGetVersion}"] =
+                                    () => this.packageVersionSelectorReporter.Verify(
+                                            r => r.PackageUpdateSelected(x.Id, x.NuGetVersion, x.UpdatedNuGetVersion),
+                                            Times.Once()));
+
+                            TestData.SundewBasePinnedPrereleasePackageUpdateForSundewCommandLine.Assert(x =>
+                                this.it[$"should update package: {x.Id} from {x.NuGetVersion} to {x.UpdatedNuGetVersion}"] =
+                                    () => this.packageVersionSelectorReporter.Verify(
+                                        r => r.PackageUpdateSelected(x.Id, x.NuGetVersion, x.UpdatedNuGetVersion),
+                                        Times.Once()));
+
+                            this.it["should not update any other packages"] = () =>
+                                this.packageVersionSelectorReporter.Verify(
+                                    r => r.PackageUpdateSelected(
+                                        It.Is<string>(x => x != TestData.SundewBasePackage.Id),
+                                        It.IsAny<NuGetVersion>(),
+                                        It.IsAny<NuGetVersion>()),
+                                    Times.Never);
+
+                            this.it["should run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Once);
+
+                            this.context["and skip-restore is set"] = () =>
+                            {
+                                this.beforeEach = () => this.arguments = new Arguments(this.arguments.PackageIds.ToList(), this.arguments.Projects.ToList(), skipRestore: true);
+
+                                this.it["should not run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Never);
+                            };
                         };
                     };
 
@@ -194,6 +260,8 @@ namespace Sundew.Build.Update.Tests
                                 It.IsAny<NuGetVersion>(),
                                 It.IsAny<NuGetVersion>()),
                             Times.Never);
+
+                    this.it["should run restore"] = () => this.processRunner.Verify(x => x.Run(It.IsAny<ProcessStartInfo>()), Times.Once);
                 };
             };
         }
@@ -203,5 +271,6 @@ namespace Sundew.Build.Update.Tests
         Arguments? arguments;
         INuGetPackageVersionFetcher? nuGetPackageVersionFetcher;
         IPackageVersionSelectorReporter? packageVersionSelectorReporter;
+        IProcessRunner? processRunner;
     }
 }

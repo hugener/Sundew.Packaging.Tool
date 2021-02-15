@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.MsBuild.NuGet
+namespace Sundew.Packaging.Update.MsBuild.NuGet
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -27,7 +27,6 @@ namespace Sundew.Build.Update.MsBuild.NuGet
         {
             var logger = NullLogger.Instance;
             var cancellationToken = CancellationToken.None;
-            var sourceCacheContext = new SourceCacheContext { NoCache = true, RefreshMemoryCache = true };
             var defaultSettings = Settings.LoadDefaultSettings(rootDirectory);
             var packageSourcesSection = defaultSettings.GetSection(PackageSourcesText);
             var packageSourceProvider = new PackageSourceProvider(defaultSettings);
@@ -42,13 +41,13 @@ namespace Sundew.Build.Update.MsBuild.NuGet
             return (await sources.SelectAsync(async x =>
                 {
                     var sourceRepository = Repository.Factory.GetCoreV3(x);
-                    var resource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+                    var resource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
 
                     return await resource.GetAllVersionsAsync(
                         packageId,
-                        sourceCacheContext,
+                        new SourceCacheContext { NoCache = true, RefreshMemoryCache = true },
                         logger,
-                        cancellationToken);
+                        cancellationToken).ConfigureAwait(false);
                 }))
                 .SelectMany(x => x);
         }

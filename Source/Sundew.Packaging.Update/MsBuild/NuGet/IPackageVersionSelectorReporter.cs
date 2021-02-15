@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Build.Update.MsBuild.NuGet
+namespace Sundew.Packaging.Update.MsBuild.NuGet
 {
     using global::NuGet.Versioning;
 
