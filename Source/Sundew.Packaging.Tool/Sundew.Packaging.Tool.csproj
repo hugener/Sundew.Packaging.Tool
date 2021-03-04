@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>spt</ToolCommandName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Kim Hugener-Ohlsen</Authors>
+    <Company>Hukano</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>* Alternative NuGet client for bulk updating NuGet packages in csproj, fsproj and vbproj projects.
+* Await NuGet package being published.
+* Prune NuGet packages from a local source.</Description>
+    <Copyright>Kim Hugener-Ohlsen</Copyright>
+    <RepositoryUrl>https://github.com/hugener/Sundew.Packaging.Tool</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/hugener/Sundew.Packaging.Tool</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.Protocol" Version="5.8.1" />
+    <PackageReference Include="NuGet.Versioning" Version="5.8.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Sundew.CommandLine" Version="6.0.0-pre-u20210304-125745" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="4.0.0-pre-u20210304-124930">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Reporting\" />
+  </ItemGroup>
+
+</Project>
