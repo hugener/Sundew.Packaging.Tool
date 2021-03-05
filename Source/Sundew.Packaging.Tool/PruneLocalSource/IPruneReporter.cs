@@ -8,11 +8,12 @@
 namespace Sundew.Packaging.Tool.PruneLocalSource
 {
     using System;
+    using System.Collections.Generic;
     using Sundew.Packaging.Tool.Reporting;
 
     public interface IPruneReporter : IExceptionReporter
     {
-        void StartPruning(string source);
+        void StartPruning(string source, IReadOnlyList<string> packageIds);
 
         void Deleted(string directory);
 

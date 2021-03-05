@@ -35,7 +35,7 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
         {
             var stopwatch = Stopwatch.StartNew();
             var source = this.nuGetSourceProvider.GetDefaultSource(allVerb.Source);
-            this.purgerReporter.StartPruning(source);
+            this.purgerReporter.StartPruning(source, allVerb.PackageIds);
             var numberDirectoriesPurged = 0;
             try
             {
@@ -46,24 +46,14 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
 
                 foreach (var packageId in allVerb.PackageIds)
                 {
-                    if (packageId == "*")
+                    var regex = new Regex($"^{RegexHelper.RewritePattern(packageId)}$");
+                    var directories = this.fileSystem.Directory.GetDirectories(source)
+                        .Where(x => regex.IsMatch(Path.GetFileName(x)));
+                    foreach (var directory in directories)
                     {
-                        this.fileSystem.Directory.Delete(source, true);
-                        this.fileSystem.Directory.CreateDirectory(source);
-                        this.purgerReporter.Deleted(source);
+                        this.fileSystem.Directory.Delete(directory, true);
+                        this.purgerReporter.Deleted(directory);
                         numberDirectoriesPurged++;
-                    }
-                    else
-                    {
-                        var regex = new Regex($"^{RegexHelper.RewritePattern(packageId)}$");
-                        var directories = this.fileSystem.Directory.GetDirectories(source)
-                            .Where(x => regex.IsMatch(Path.GetFileName(x)));
-                        foreach (var directory in directories)
-                        {
-                            this.fileSystem.Directory.Delete(directory, true);
-                            this.purgerReporter.Deleted(directory);
-                            numberDirectoriesPurged++;
-                        }
                     }
                 }
 

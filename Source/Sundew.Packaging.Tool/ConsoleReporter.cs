@@ -9,7 +9,10 @@ namespace Sundew.Packaging.Tool
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
     using NuGet.Versioning;
+    using Sundew.Base.Collections;
+    using Sundew.Base.Text;
     using Sundew.Packaging.Tool.AwaitPublish;
     using Sundew.Packaging.Tool.MsBuild;
     using Sundew.Packaging.Tool.MsBuild.NuGet;
@@ -38,7 +41,7 @@ namespace Sundew.Packaging.Tool
 
         public void StartingPackageUpdate(string rootDirectory)
         {
-            Console.WriteLine($"Starting package update in: {rootDirectory}");
+            Console.WriteLine($"Updating package in: {rootDirectory}");
         }
 
         public void UpdatingProject(string project)
@@ -51,7 +54,7 @@ namespace Sundew.Packaging.Tool
 
         public void CompletedPackageUpdate(List<MsBuildProject> msBuildProjects, bool skippedRestore, TimeSpan totalTime)
         {
-            Console.WriteLine($"Completed updating{(skippedRestore ? string.Empty : " and restored")}: {msBuildProjects.Count} projects in: {totalTime}");
+            Console.WriteLine($"Updated{(skippedRestore ? string.Empty : " and restored")}: {msBuildProjects.Count} projects in: {totalTime}");
         }
 
         public void Exception(Exception exception)
@@ -72,12 +75,12 @@ namespace Sundew.Packaging.Tool
 
         public void StartWaitingForPackage(PackageIdAndVersion packageIdAndVersion, string source)
         {
-            Console.WriteLine($"Start waiting for: {packageIdAndVersion.Id}.{packageIdAndVersion.NuGetVersion} in {source}");
+            Console.WriteLine($"Waiting for: {packageIdAndVersion.Id}.{packageIdAndVersion.NuGetVersion} in {source}");
         }
 
         public void CompletedWaitingForPackage(PackageIdAndVersion packageIdAndVersion, bool packageExists, TimeSpan stopwatchElapsed)
         {
-            Console.WriteLine($"Completed waiting for: {packageIdAndVersion.Id}.{packageIdAndVersion.NuGetVersion} {(packageExists ? "succeeded" : "timed out")}");
+            Console.WriteLine($"{(packageExists ? "Successfully waited" : "Timed out when waiting")} for: {packageIdAndVersion.Id}.{packageIdAndVersion.NuGetVersion}");
         }
 
         public void ReportMessage(string message)
@@ -93,9 +96,10 @@ namespace Sundew.Packaging.Tool
             }
         }
 
-        public void StartPruning(string source)
+        public void StartPruning(string source, IReadOnlyList<string> packageIds)
         {
-            Console.WriteLine($"Start purging in: {source}");
+            const string separator = ", ";
+            Console.WriteLine($"Pruning matches of {packageIds.AggregateToStringBuilder((builder, s) => builder.Append(s).Append(separator), builder => builder.ToStringFromEnd(separator.Length))} in: {source} ");
         }
 
         public void Deleted(string directory)
@@ -110,11 +114,11 @@ namespace Sundew.Packaging.Tool
         {
             if (wasSuccessful)
             {
-                Console.WriteLine($"Completed purging {numberDirectoriesPurged} directories");
+                Console.WriteLine($"Pruned {numberDirectoriesPurged} directories");
                 return;
             }
 
-            Console.WriteLine($"Purging canceled ({numberDirectoriesPurged} directory deleted)");
+            Console.WriteLine($"Canceled pruning... ({numberDirectoriesPurged} directories deleted)");
         }
     }
 }
