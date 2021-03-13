@@ -15,7 +15,6 @@ namespace Sundew.Packaging.Tool
     {
         internal const string LocalSundewName = "Local-Sundew";
         internal const string VersionGroupName = "Version";
-        internal static readonly Regex PackageIdAndVersionRegex = new(@"(?: |\.)(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
 
         public static void AddVerbose(IArgumentsBuilder argumentsBuilder, bool verbose, Action<bool> setValue)
         {

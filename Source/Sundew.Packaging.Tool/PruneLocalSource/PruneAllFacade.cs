@@ -12,7 +12,6 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using NuGet.Common;
     using Sundew.Packaging.Tool.MsBuild.NuGet;
@@ -46,7 +45,7 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
 
                 foreach (var packageId in allVerb.PackageIds)
                 {
-                    var regex = new Regex($"^{RegexHelper.RewritePattern(packageId)}$");
+                    var regex = GlobRegexHelper.CreateRegex(packageId);
                     var directories = this.fileSystem.Directory.GetDirectories(source)
                         .Where(x => regex.IsMatch(Path.GetFileName(x)));
                     foreach (var directory in directories)

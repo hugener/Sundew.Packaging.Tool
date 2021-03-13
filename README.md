@@ -1,7 +1,7 @@
 # Sundew.Packaging.Tool
 
 ## **1. Description**
-* Alternative NuGet client for bulk updating NuGet packages in csproj, fsproj and vbproj projects.
+* Alternative NuGet client for bulk updating NuGet packages in csproj, fsproj and vbproj projects (PackageReference only).
 * Await NuGet package being published.
 * Prune NuGet packages from a local source.
 
@@ -18,7 +18,7 @@ Help
                               Format: Id[.Version] or "Id[ Version]" (Pinning version is optional)
      -p  | --projects       | The project(s) to update (* Wildcards supported)                     | Default: *
      -s  | --source         | The source or source name to search for packages ("All" supported)   | Default: NuGet.config: defaultPushSource
-         | --version        | Pins the NuGet package version.                                      | Default: Latest version
+         | --version        | The NuGet package version (* Wildcards supported).                   | Default: Latest version
      -d  | --root-directory | The directory to search for projects                                 | Default: Current directory
      -pr | --prerelease     | Allow updating to latest prerelease version
      -v  | --verbose        | Verbose

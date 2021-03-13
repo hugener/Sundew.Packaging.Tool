@@ -8,14 +8,17 @@
 namespace Sundew.Packaging.Tool
 {
     using System;
+    using System.Text.RegularExpressions;
     using NuGet.Versioning;
     using Sundew.CommandLine;
     using Sundew.Packaging.Tool.MsBuild.NuGet;
 
     public class AwaitPublishVerb : IVerb
     {
+        internal static readonly Regex PackageIdAndVersionRegex = new(@"(?: |\.)(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
+
         public AwaitPublishVerb()
-         : this(default!)
+            : this(default!)
         {
         }
 
@@ -93,7 +96,7 @@ namespace Sundew.Packaging.Tool
 
         private void DeserializePackageId(string id)
         {
-            var match = CommonOptions.PackageIdAndVersionRegex.Match(id);
+            var match = PackageIdAndVersionRegex.Match(id);
             if (match.Success)
             {
                 var versionGroup = match.Groups[CommonOptions.VersionGroupName];

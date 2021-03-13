@@ -144,7 +144,7 @@ namespace Sundew.Packaging.Tool.Tests
 
                         this.context["and pins Sundew.Base version to 6.0.0"] = () =>
                         {
-                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", NuGetVersion.Parse("6.0.0")) }, this.arguments.Projects.ToList());
+                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", "6.0.0") }, this.arguments.Projects.ToList());
 
                             TestData.SundewCommandLineProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
                                 () => this.fileSystem?.File.Verify(
@@ -187,7 +187,7 @@ namespace Sundew.Packaging.Tool.Tests
 
                         this.context["and pins Sundew.Base version to 5.1 latest prerelease"] = () =>
                         {
-                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", NuGetVersion.Parse("5.1"), true) }, this.arguments.Projects.ToList(), allowPrerelease: true);
+                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", "5.1.*") }, this.arguments.Projects.ToList(), allowPrerelease: true);
 
                             TestData.SundewCommandLineProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
                                 () => this.fileSystem?.File.Verify(

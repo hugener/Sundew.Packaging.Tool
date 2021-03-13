@@ -9,6 +9,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
     using Sundew.Base.Collections;
@@ -26,15 +27,12 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
             this.packageVersionSelectorReporter = packageVersionSelectorReporter;
         }
 
-        public async Task<IEnumerable<PackageUpdate>> GetPackageVersions(IReadOnlyList<PackageUpdateSuggestion> possiblePackageUpdates, PinnedNuGetVersion? pinnedNuGetVersion, string rootDirectory, bool allowPrerelease, string? source)
+        public async Task<IEnumerable<PackageUpdate>> GetPackageVersions(IReadOnlyList<PackageUpdateSuggestion> possiblePackageUpdates, VersionMatcher? globalVersionMatcher, string rootDirectory, bool allowPrerelease, string? source)
         {
             return (await possiblePackageUpdates.SelectAsync(async x =>
                 {
-                    var actualPinnedNuGetVersion = pinnedNuGetVersion?.NuGetVersion ?? x.PinnedNuGetVersion;
-                    var actualUseMajorMinorSearchMode = pinnedNuGetVersion?.UseMajorMinorSearchMode ?? x.UseMajorMinorSearchMode.GetValueOrDefault(false);
-                    var newNuGetVersion = pinnedNuGetVersion == null || actualUseMajorMinorSearchMode
-                        ? await this.GetLatestVersion(x.Id, actualPinnedNuGetVersion, rootDirectory, allowPrerelease, source, actualUseMajorMinorSearchMode)
-                        : pinnedNuGetVersion.NuGetVersion;
+                    var actualVersionMatcher = x.VersionMatcher ?? globalVersionMatcher;
+                    var newNuGetVersion = await this.GetLatestVersion(x.Id, actualVersionMatcher, rootDirectory, allowPrerelease, source);
 
                     if (x.NuGetVersion != newNuGetVersion)
                     {
@@ -50,11 +48,10 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
 
         private async Task<NuGetVersion> GetLatestVersion(
             string packageId,
-            NuGetVersion? pinnedNuGetVersion,
+            VersionMatcher? versionMatcher,
             string rootDirectory,
             bool allowPrerelease,
-            string? source,
-            bool useMajorMinorSearchMode)
+            string? source)
         {
             if (!this.cache.TryGetValue(packageId, out var versions))
             {
@@ -65,12 +62,11 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
                 this.cache.Add(packageId, versions);
             }
 
-            if (pinnedNuGetVersion != null && useMajorMinorSearchMode)
+            if (versionMatcher != null)
             {
-                return versions.First(x =>
-                    x.Major == pinnedNuGetVersion.Major
-                    && x.Minor == pinnedNuGetVersion.Minor
-                    && (!x.IsPrerelease || (allowPrerelease && x.IsPrerelease)));
+                return versions.FirstOrDefault(x =>
+                    versionMatcher.Regex.IsMatch(x.ToFullString())
+                    && (!x.IsPrerelease || (allowPrerelease && x.IsPrerelease))) ?? throw new NuGetVersionNotFoundException(packageId, versionMatcher.Pattern, allowPrerelease, versions);
             }
 
             return versions.First(x => !x.IsPrerelease || (allowPrerelease && x.IsPrerelease));
