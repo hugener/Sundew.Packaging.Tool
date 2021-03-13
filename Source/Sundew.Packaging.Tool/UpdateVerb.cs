@@ -18,7 +18,7 @@ namespace Sundew.Packaging.Tool
     {
         private const string PackageId = "PackageId";
         private const string Star = "*";
-        private static readonly Regex PackageIdAndVersionRegex = new(@"(?<PackageId>.+)(?: |\.)(?<Version>(?:\d+(?:\.\d+)?(?<Patch>\.\d+)?)[^\.]*)");
+        private static readonly Regex PackageIdAndVersionRegex = new(@"(?<PackageId>\S+)(?: |\.)(?<Version>(?:\d+(?:\.(?:\d|\*)+)(?<Patch>\.(?:\d|\*)+)?)[^\.]*)");
         private static readonly Regex VersionRegex = new(@"(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
         private readonly List<PackageId> packageIds;
         private readonly List<string> projects;
