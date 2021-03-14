@@ -16,9 +16,8 @@ namespace Sundew.Packaging.Tool
 
     public class UpdateVerb : IVerb
     {
-        private const string PackageId = "PackageId";
         private const string Star = "*";
-        private static readonly Regex PackageIdAndVersionRegex = new(@"(?<PackageId>\S+)(?: |\.)(?<Version>(?:\d+(?:\.(?:\d|\*)+)(?<Patch>\.(?:\d|\*)+)?)[^\.]*)");
+        private static readonly Regex PackageIdAndVersionRegex = new(@"(?: |\.)(?<Version>[\d\.\*]+(?:(?:-(?<Prerelease>[^\.\s]+))|$))");
         private static readonly Regex VersionRegex = new(@"(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
         private readonly List<PackageId> packageIds;
         private readonly List<string> projects;
@@ -121,7 +120,7 @@ namespace Sundew.Packaging.Tool
                 var versionGroup = match.Groups[CommonOptions.VersionGroupName];
                 if (versionGroup.Success)
                 {
-                    return new PackageId(match.Groups[PackageId].Value, versionGroup.Value);
+                    return new PackageId(id.Substring(0, versionGroup.Index - 1), versionGroup.Value, versionGroup.Value.Contains('*'));
                 }
             }
 

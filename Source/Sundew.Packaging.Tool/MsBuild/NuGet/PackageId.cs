@@ -10,7 +10,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
     using System.Text.RegularExpressions;
     using global::NuGet.Versioning;
 
-    public record PackageId(string Id, string? VersionPattern = null);
+    public record PackageId(string Id, string? VersionPattern = null, bool HasWildcard = false);
 
     public record PackageIdAndVersion(string Id, NuGetVersion NuGetVersion);
 

@@ -12,7 +12,6 @@ namespace Sundew.Packaging.Tool.Update
     using System.Diagnostics;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Sundew.Packaging.Tool.Diagnostics;
     using Sundew.Packaging.Tool.MsBuild;

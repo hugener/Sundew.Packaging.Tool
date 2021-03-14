@@ -17,30 +17,30 @@ namespace Sundew.Packaging.Tool.Tests
     [TestFixture]
     public class UpdateVerbTests
     {
-        [TestCase(@"u -id Sundew.Base", "Sundew.Base", null)]
-        [TestCase(@"u -id Sundew.Base.6.0.0", "Sundew.Base", "6.0.0")]
-        [TestCase(@"u -id ""Sundew.Base 6.0.0""", "Sundew.Base", "6.0.0")]
-        [TestCase(@"u -id ""Sundew.Base 6.0.0-pre""", "Sundew.Base", "6.0.0-pre")]
-        [TestCase(@"u -id WithNumber.6.6.0.0-pre", "WithNumber", "6.6.0.0-pre")]
-        [TestCase(@"u -id ""WithIllegalNumber.6 6.0.0-pre""", "WithIllegalNumber.6", "6.0.0-pre")]
-        [TestCase(@"u -id ""WithIllegalNumber.6d 6.0.0-pre""", "WithIllegalNumber.6d", "6.0.0-pre")]
-        [TestCase(@"u -id WithIllegal.6.Number.6.0.0-pre", "WithIllegal.6.Number", "6.0.0-pre")]
-        [TestCase(@"u -id WithIllegal.6d.Number.6.0.0-pre", "WithIllegal.6.Number", "6.0.0-pre")]
-        [TestCase(@"u -id WithIllegal.6.Number.16.0.0-pre", "WithIllegal.6.Number", "16.0.0-pre")]
-        [TestCase(@"u -id WithIllegal.6.Number.6.10.0-pre", "WithIllegal.6.Number", "6.10.0-pre")]
-        [TestCase(@"u -id WithIllegal.6.Number.6.0.10-pre", "WithIllegal.6.Number", "6.0.10-pre")]
-        [TestCase(@"u -id Sundew.Base.6.0", "Sundew.Base", "6.0")]
-        [TestCase(@"u -id ""Sundew.Base 6.0""", "Sundew.Base", "6.0")]
-        [TestCase(@"u -id ""Sundew.Base 6.0-pre""", "Sundew.Base", "6.0-pre")]
-        [TestCase(@"u -id ""Sundew.Base 6.0.*-pre""", "Sundew.Base", "6.0.*-pre")]
-        public void Parse_When_PackageIdIsSpecifiedWithVersion_Then_VersionShouldBeParsedSuccessfully(string input, string expectedId, string? expectedVersion)
+        [TestCase(@"u -id Sundew.Base", "Sundew.Base", null, false)]
+        [TestCase(@"u -id Sundew.Base.6.0.0", "Sundew.Base", "6.0.0", false)]
+        [TestCase(@"u -id ""Sundew.Base 6.0.0""", "Sundew.Base", "6.0.0", false)]
+        [TestCase(@"u -id ""Sundew.Base 6.0.0-pre""", "Sundew.Base", "6.0.0-pre", false)]
+        [TestCase(@"u -id WithNumber.6.6.0.0-pre", "WithNumber", "6.6.0.0-pre", false)]
+        [TestCase(@"u -id ""WithIllegalNumber.6 6.0.0-pre""", "WithIllegalNumber.6", "6.0.0-pre", false)]
+        [TestCase(@"u -id ""WithIllegalNumber.6d 6.0.0-pre""", "WithIllegalNumber.6d", "6.0.0-pre", false)]
+        [TestCase(@"u -id WithIllegal.6.Number.6.0.0-pre", "WithIllegal.6.Number", "6.0.0-pre", false)]
+        [TestCase(@"u -id WithIllegal.6d.Number.6.0.0-pre", "WithIllegal.6d.Number", "6.0.0-pre", false)]
+        [TestCase(@"u -id WithIllegal.6.Number.16.0.0-pre", "WithIllegal.6.Number", "16.0.0-pre", false)]
+        [TestCase(@"u -id WithIllegal.6.Number.6.10.0-pre", "WithIllegal.6.Number", "6.10.0-pre", false)]
+        [TestCase(@"u -id WithIllegal.6.Number.6.0.10-pre", "WithIllegal.6.Number", "6.0.10-pre", false)]
+        [TestCase(@"u -id Sundew.Base.6.0", "Sundew.Base", "6.0", false)]
+        [TestCase(@"u -id ""Sundew.Base 6.0""", "Sundew.Base", "6.0", false)]
+        [TestCase(@"u -id ""Sundew.Base 6.0-pre""", "Sundew.Base", "6.0-pre", false)]
+        [TestCase(@"u -id ""Sundew.Base 6.0.*-pre""", "Sundew.Base", "6.0.*-pre", true)]
+        public void Parse_When_PackageIdIsSpecifiedWithVersion_Then_VersionShouldBeParsedSuccessfully(string input, string expectedId, string? expectedVersion, bool expectedHasWildcard)
         {
             var commandLineParser = new CommandLineParser<int, int>();
             var arguments = commandLineParser.AddVerb(new UpdateVerb(), updateVerb => Result.Success(0));
 
             commandLineParser.Parse(input);
 
-            arguments.PackageIds.Should().Equal(new[] { new PackageId(expectedId, expectedVersion) });
+            arguments.PackageIds.Should().Equal(new[] { new PackageId(expectedId, expectedVersion, expectedHasWildcard) });
         }
 
         [TestCase(@"u -id Sundew.Base", "Sundew.Base", null)]
