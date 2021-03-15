@@ -54,15 +54,15 @@ namespace Sundew.Packaging.Tool.Update
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                var globalVersionMatcher = string.IsNullOrEmpty(updateVerb.VersionPattern)
+                var globalGlobRegex = string.IsNullOrEmpty(updateVerb.VersionPattern)
                     ? null
-                    : new VersionMatcher(GlobRegexHelper.CreateRegex(updateVerb.VersionPattern), updateVerb.VersionPattern);
+                    : GlobRegex.Create(updateVerb.VersionPattern);
                 foreach (var project in this.msBuildProjectFileSearcher.GetProjects(rootDirectory, updateVerb.Projects).ToList())
                 {
                     this.packageUpdaterFacadeReporter.UpdatingProject(project);
 
                     var msBuildProject = await this.msBuildProjectPackagesParser.GetPackages(project, updateVerb.PackageIds);
-                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, globalVersionMatcher, rootDirectory, updateVerb.AllowPrerelease, updateVerb.Source);
+                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, globalGlobRegex, rootDirectory, updateVerb.AllowPrerelease, updateVerb.Source);
                     var result = this.packageVersionUpdater.TryUpdateAsync(msBuildProject, packageUpdates);
                     if (result)
                     {

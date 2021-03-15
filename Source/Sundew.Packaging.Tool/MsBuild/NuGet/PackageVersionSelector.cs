@@ -13,6 +13,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
     using Sundew.Base.Collections;
+    using Sundew.Packaging.Tool.RegularExpression;
 
     public class PackageVersionSelector
     {
@@ -27,12 +28,12 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
             this.packageVersionSelectorReporter = packageVersionSelectorReporter;
         }
 
-        public async Task<IEnumerable<PackageUpdate>> GetPackageVersions(IReadOnlyList<PackageUpdateSuggestion> possiblePackageUpdates, VersionMatcher? globalVersionMatcher, string rootDirectory, bool allowPrerelease, string? source)
+        public async Task<IEnumerable<PackageUpdate>> GetPackageVersions(IReadOnlyList<PackageUpdateSuggestion> possiblePackageUpdates, GlobRegex? globalGlobRegex, string rootDirectory, bool allowPrerelease, string? source)
         {
             return (await possiblePackageUpdates.SelectAsync(async x =>
                 {
-                    var actualVersionMatcher = x.VersionMatcher ?? globalVersionMatcher;
-                    var newNuGetVersion = await this.GetLatestVersion(x.Id, actualVersionMatcher, rootDirectory, allowPrerelease, source);
+                    var actualGlobRegex = x.GlobRegex ?? globalGlobRegex;
+                    var newNuGetVersion = actualGlobRegex != null && !actualGlobRegex.IsPattern ? NuGetVersion.Parse(actualGlobRegex.Pattern) : await this.GetLatestVersion(x.Id, actualGlobRegex, rootDirectory, allowPrerelease, source);
 
                     if (x.NuGetVersion != newNuGetVersion)
                     {
@@ -48,7 +49,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
 
         private async Task<NuGetVersion> GetLatestVersion(
             string packageId,
-            VersionMatcher? versionMatcher,
+            GlobRegex? globRegex,
             string rootDirectory,
             bool allowPrerelease,
             string? source)
@@ -62,11 +63,11 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
                 this.cache.Add(packageId, versions);
             }
 
-            if (versionMatcher != null)
+            if (globRegex != null)
             {
                 return versions.FirstOrDefault(x =>
-                    versionMatcher.Regex.IsMatch(x.ToFullString())
-                    && (!x.IsPrerelease || (allowPrerelease && x.IsPrerelease))) ?? throw new NuGetVersionNotFoundException(packageId, versionMatcher.Pattern, allowPrerelease, versions);
+                    globRegex.IsMatch(x.ToFullString())
+                    && (!x.IsPrerelease || (allowPrerelease && x.IsPrerelease))) ?? throw new NuGetVersionNotFoundException(packageId, globRegex.Glob, allowPrerelease, versions);
             }
 
             return versions.First(x => !x.IsPrerelease || (allowPrerelease && x.IsPrerelease));

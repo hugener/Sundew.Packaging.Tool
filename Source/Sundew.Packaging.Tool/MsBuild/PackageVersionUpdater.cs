@@ -30,7 +30,7 @@ namespace Sundew.Packaging.Tool.MsBuild
             var wasModified = false;
             foreach (var packageId in packageUpdates)
             {
-                var regex = new Regex(string.Format(MsBuildProjectPackagesParser.PackageReferenceRegex, GlobRegexHelper.RewritePattern(packageId.Id)));
+                var regex = new Regex(string.Format(MsBuildProjectPackagesParser.PackageReferenceRegex, GlobRegex.ConvertToRegexPattern(packageId.Id).Expression));
                 fileContent = regex.Replace(
                     fileContent,
                     m =>

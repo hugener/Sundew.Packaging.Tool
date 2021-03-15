@@ -9,15 +9,16 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
 {
     using System.Text.RegularExpressions;
     using global::NuGet.Versioning;
+    using Sundew.Packaging.Tool.RegularExpression;
 
-    public record PackageId(string Id, string? VersionPattern = null, bool HasWildcard = false);
+    public record PackageId(string Id, string? VersionPattern = null);
 
     public record PackageIdAndVersion(string Id, NuGetVersion NuGetVersion);
 
     public record PackageUpdateSuggestion(
         string Id,
         NuGetVersion NuGetVersion,
-        VersionMatcher? VersionMatcher) : PackageIdAndVersion(Id, NuGetVersion);
+        GlobRegex? GlobRegex) : PackageIdAndVersion(Id, NuGetVersion);
 
     public record PackageUpdate(string Id, NuGetVersion NuGetVersion, NuGetVersion UpdatedNuGetVersion) : PackageIdAndVersion(Id, NuGetVersion);
 

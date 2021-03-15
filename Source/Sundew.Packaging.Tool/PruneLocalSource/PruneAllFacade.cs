@@ -45,9 +45,9 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
 
                 foreach (var packageId in allVerb.PackageIds)
                 {
-                    var regex = GlobRegexHelper.CreateRegex(packageId);
+                    var globRegex = GlobRegex.Create(packageId);
                     var directories = this.fileSystem.Directory.GetDirectories(source)
-                        .Where(x => regex.IsMatch(Path.GetFileName(x)));
+                        .Where(x => globRegex.IsMatch(Path.GetFileName(x)));
                     foreach (var directory in directories)
                     {
                         this.fileSystem.Directory.Delete(directory, true);

@@ -17,14 +17,15 @@ namespace Sundew.Packaging.Tool
     public class UpdateVerb : IVerb
     {
         private const string Star = "*";
-        private static readonly Regex PackageIdAndVersionRegex = new(@"(?: |\.)(?<Version>[\d\.\*]+(?:(?:-(?<Prerelease>[^\.\s]+))|$))");
-        private static readonly Regex VersionRegex = new(@"(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
+        private const string VersionRegexText = @"(?<Version>[\d\.\*]+(?:(?:-(?<Prerelease>[^\.\s]+))|$))";
+        private static readonly Regex PackageIdAndVersionRegex = new(@$"(?: |\.){VersionRegexText}");
+        private static readonly Regex VersionRegex = new(VersionRegexText);
         private readonly List<PackageId> packageIds;
         private readonly List<string> projects;
         private bool useLocalSource;
 
         public UpdateVerb()
-        : this(new List<PackageId> { new(Star) }, new List<string> {Star})
+        : this(new List<PackageId> { new(Star) }, new List<string> { Star })
         {
         }
 
@@ -120,7 +121,7 @@ namespace Sundew.Packaging.Tool
                 var versionGroup = match.Groups[CommonOptions.VersionGroupName];
                 if (versionGroup.Success)
                 {
-                    return new PackageId(id.Substring(0, versionGroup.Index - 1), versionGroup.Value, versionGroup.Value.Contains('*'));
+                    return new PackageId(id.Substring(0, versionGroup.Index - 1), versionGroup.Value);
                 }
             }
 

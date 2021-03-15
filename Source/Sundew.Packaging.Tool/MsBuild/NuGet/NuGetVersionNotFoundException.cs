@@ -16,7 +16,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
     internal class NuGetVersionNotFoundException : Exception
     {
         public NuGetVersionNotFoundException(string packageId, string versionPattern, bool allowPrerelease, IReadOnlyList<NuGetVersion> versions)
-            : base(FormattableString.Invariant($"{packageId}: the version pattern: {versionPattern} could not be matched ({(allowPrerelease ? "prerelease allowed" : "no prereleases")}) any of the versions:{GetVersions(versions)}"))
+            : base(FormattableString.Invariant($"Could not find {packageId} version matching the pattern: {versionPattern} ({(allowPrerelease ? "prerelease allowed" : "no prereleases")}) in the available versions:{GetVersions(versions)}"))
         {
         }
 
