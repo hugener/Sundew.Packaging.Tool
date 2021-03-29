@@ -63,7 +63,7 @@ namespace Sundew.Packaging.Tool.RegularExpression
             var (expression, isPattern) = ConvertToRegexPattern(pattern);
             if (matchLines)
             {
-                return new($"^{expression}$",pattern, regexOptions, isPattern);
+                return new($"^{expression}$", pattern, regexOptions, isPattern);
             }
 
             return new(expression, pattern, regexOptions, isPattern);

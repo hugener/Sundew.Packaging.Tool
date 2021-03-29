@@ -9,7 +9,7 @@ namespace Sundew.Packaging.Tool.MsBuild
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
-    using Sundew.Base.Computation;
+    using Sundew.Base.Primitives.Computation;
     using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
 

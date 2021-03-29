@@ -32,12 +32,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Sundew.CommandLine" Version="6.0.2" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="5.0.0">
+    <PackageReference Include="Sundew.CommandLine" Version="6.0.3-u20210329-212558-dev" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="5.1.0-u20210328-203014-pre">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.25" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.28" />
   </ItemGroup>
 
   <ItemGroup>

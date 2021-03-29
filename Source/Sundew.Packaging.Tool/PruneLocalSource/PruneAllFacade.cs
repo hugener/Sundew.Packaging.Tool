@@ -35,7 +35,7 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
             var stopwatch = Stopwatch.StartNew();
             var source = this.nuGetSourceProvider.GetDefaultSource(allVerb.Source);
             this.purgerReporter.StartPruning(source, allVerb.PackageIds);
-            var numberDirectoriesPurged = 0;
+            var numberDirectoriesPruned = 0;
             try
             {
                 if (!UriUtility.TryCreateSourceUri(source, UriKind.Absolute).IsFile)
@@ -52,15 +52,15 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
                     {
                         this.fileSystem.Directory.Delete(directory, true);
                         this.purgerReporter.Deleted(directory);
-                        numberDirectoriesPurged++;
+                        numberDirectoriesPruned++;
                     }
                 }
 
-                this.purgerReporter.CompletedPruning(true, numberDirectoriesPurged, stopwatch.Elapsed);
+                this.purgerReporter.CompletedPruning(true, numberDirectoriesPruned, stopwatch.Elapsed);
             }
             catch (OperationCanceledException)
             {
-                this.purgerReporter.CompletedPruning(false, numberDirectoriesPurged, stopwatch.Elapsed);
+                this.purgerReporter.CompletedPruning(false, numberDirectoriesPruned, stopwatch.Elapsed);
                 return Task.FromResult(-3);
             }
             catch (Exception e)
