@@ -52,7 +52,7 @@ namespace Sundew.Packaging.Tool
 
         private static async ValueTask<Result<int, ParserError<int>>> ExecuteDeleteAsync(DeleteVerb deleteVerb)
         {
-            var deleteFacade = new DeleteFacade(new FileSystem(), new ConsoleReporter(false));
+            var deleteFacade = new DeleteFacade(new FileSystem(), new ConsoleReporter(deleteVerb.Verbose));
             return Result.Success(await deleteFacade.Delete(deleteVerb));
         }
 

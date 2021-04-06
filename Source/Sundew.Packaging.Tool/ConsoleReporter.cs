@@ -102,6 +102,14 @@ namespace Sundew.Packaging.Tool
             Console.WriteLine($"Pruning matches of {packageIds.AggregateToString(separator)} in: {source} ");
         }
 
+        public void StartingDelete(string rootedFileSpecification)
+        {
+            if (this.verbose)
+            {
+                Console.WriteLine($"Deleting {rootedFileSpecification}");
+            }
+        }
+
         public void Deleted(string file)
         {
             if (this.verbose)
@@ -114,7 +122,7 @@ namespace Sundew.Packaging.Tool
         {
             if (wasSuccessful)
             {
-                Console.WriteLine($"Deleted {numberFilesDeleted} files");
+                Console.WriteLine($"Deleted {numberFilesDeleted} file(s)");
                 return;
             }
 

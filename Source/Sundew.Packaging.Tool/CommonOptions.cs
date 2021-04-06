@@ -8,7 +8,6 @@
 namespace Sundew.Packaging.Tool
 {
     using System;
-    using System.Text.RegularExpressions;
     using Sundew.CommandLine;
 
     public class CommonOptions

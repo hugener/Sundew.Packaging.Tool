@@ -12,6 +12,8 @@ namespace Sundew.Packaging.Tool.Delete
 
     public interface IDeleteFacadeReporter : IExceptionReporter
     {
+        void StartingDelete(string rootedFileSpecification);
+
         void Deleted(string file);
 
         void CompletedDeleting(bool wasSuccessful, int numberFilesDeleted, TimeSpan stopwatchElapsed);

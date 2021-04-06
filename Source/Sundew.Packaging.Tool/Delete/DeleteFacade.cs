@@ -40,18 +40,23 @@ namespace Sundew.Packaging.Tool.Delete
                 foreach (var fileSpecification in deleteVerb.Files)
                 {
                     var rootedFileSpecification = Path.IsPathRooted(fileSpecification) ? fileSpecification : Path.Combine(rootDirectory, fileSpecification);
+                    this.deleteFacadeReporter.StartingDelete(rootedFileSpecification);
                     var globRegex = GlobRegex.Create(rootedFileSpecification);
                     var match = DirectoryRegex.Match(Path.GetDirectoryName(globRegex.Glob) ?? string.Empty);
-                    var files = this.fileSystem.Directory
-                        .EnumerateFiles(
-                            Path.TrimEndingDirectorySeparator(match.Value),
-                            AllFilesSearchPattern,
-                            deleteVerb.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                    foreach (var file in files.Where(x => globRegex.IsMatch(x)))
+                    var directory = Path.TrimEndingDirectorySeparator(match.Value);
+                    if (this.fileSystem.Directory.Exists(directory))
                     {
-                        this.fileSystem.File.Delete(file);
-                        this.deleteFacadeReporter.Deleted(file);
-                        numberFilesDeleted++;
+                        var files = this.fileSystem.Directory
+                            .EnumerateFiles(
+                                directory,
+                                AllFilesSearchPattern,
+                                deleteVerb.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                        foreach (var file in files.Where(x => globRegex.IsMatch(x)))
+                        {
+                            this.fileSystem.File.Delete(file);
+                            this.deleteFacadeReporter.Deleted(file);
+                            numberFilesDeleted++;
+                        }
                     }
                 }
 

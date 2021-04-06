@@ -46,6 +46,7 @@ namespace Sundew.Packaging.Tool.Tests
         {
             this.fileSystem = New.Mock<IFileSystem>().SetDefaultValue(DefaultValue.Mock);
             this.testee = new DeleteFacade(this.fileSystem, New.Mock<IDeleteFacadeReporter>());
+            this.fileSystem.Setup(x => x.Directory.Exists(It.IsAny<string>())).Returns(true);
         }
 
         [TestCase("Any*.*", new[] { AnyText, AnyImage, AnyPackage })]
