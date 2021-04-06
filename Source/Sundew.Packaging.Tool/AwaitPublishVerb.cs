@@ -9,9 +9,9 @@ namespace Sundew.Packaging.Tool
 {
     using System;
     using System.Text.RegularExpressions;
-    using NuGet.Versioning;
+    using global::NuGet.Versioning;
     using Sundew.CommandLine;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class AwaitPublishVerb : IVerb
     {

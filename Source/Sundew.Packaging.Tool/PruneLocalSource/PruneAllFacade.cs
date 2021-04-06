@@ -13,8 +13,8 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading.Tasks;
-    using NuGet.Common;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using global::NuGet.Common;
+    using Sundew.Packaging.Tool.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
 
     public class PruneAllFacade
@@ -40,7 +40,7 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
             {
                 if (!UriUtility.TryCreateSourceUri(source, UriKind.Absolute).IsFile)
                 {
-                    throw new InvalidOperationException("Purge only works with local sources");
+                    throw new InvalidOperationException("Prune only works with local sources");
                 }
 
                 foreach (var packageId in allVerb.PackageIds)

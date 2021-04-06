@@ -11,7 +11,7 @@ namespace Sundew.Packaging.Tool.Tests
     using NUnit.Framework;
     using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     [TestFixture]
     public class UpdateVerbTests

@@ -14,14 +14,14 @@ namespace Sundew.Packaging.Tool.Tests
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading;
+    using global::NuGet.Versioning;
     using Moq;
-    using NuGet.Versioning;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.Update;
+    using Sundew.Packaging.Tool.Update.MsBuild;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class describe_package_updater_facade : nspec
     {

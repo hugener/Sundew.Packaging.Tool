@@ -12,12 +12,15 @@ namespace Sundew.Packaging.Tool.Delete
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Sundew.Packaging.Tool.RegularExpression;
 
     public class DeleteFacade
     {
         private const string AllFilesSearchPattern = "*.*";
+        private const string Directory = nameof(Directory);
+        private static readonly Regex DirectoryRegex = new(@"^[^*]*");
         private readonly IFileSystem fileSystem;
         private readonly IDeleteFacadeReporter deleteFacadeReporter;
 
@@ -36,11 +39,15 @@ namespace Sundew.Packaging.Tool.Delete
                 var rootDirectory = deleteVerb.RootDirectory ?? this.fileSystem.Directory.GetCurrentDirectory();
                 foreach (var fileSpecification in deleteVerb.Files)
                 {
-                    var rootedFileSpecification = Path.IsPathRooted(fileSpecification) ? fileSpecification : Path.Combine(rootDirectory);
+                    var rootedFileSpecification = Path.IsPathRooted(fileSpecification) ? fileSpecification : Path.Combine(rootDirectory, fileSpecification);
                     var globRegex = GlobRegex.Create(rootedFileSpecification);
-                    foreach (var file in this.fileSystem.Directory
-                        .EnumerateFiles(Path.GetDirectoryName(globRegex.Glob), AllFilesSearchPattern, deleteVerb.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                        .Where(x => globRegex.IsMatch(x)))
+                    var match = DirectoryRegex.Match(Path.GetDirectoryName(globRegex.Glob) ?? string.Empty);
+                    var files = this.fileSystem.Directory
+                        .EnumerateFiles(
+                            Path.TrimEndingDirectorySeparator(match.Value),
+                            AllFilesSearchPattern,
+                            deleteVerb.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                    foreach (var file in files.Where(x => globRegex.IsMatch(x)))
                     {
                         this.fileSystem.File.Delete(file);
                         this.deleteFacadeReporter.Deleted(file);

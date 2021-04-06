@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild.NuGet
+namespace Sundew.Packaging.Tool.NuGet
 {
     using System;
     using System.Linq;

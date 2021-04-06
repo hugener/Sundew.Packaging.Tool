@@ -5,13 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
     using Sundew.Base.Primitives.Computation;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class PackageVersionUpdater
     {

@@ -14,9 +14,9 @@ namespace Sundew.Packaging.Tool.Update
     using System.Linq;
     using System.Threading.Tasks;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public sealed class PackageUpdaterFacade
     {

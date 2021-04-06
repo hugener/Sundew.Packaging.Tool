@@ -8,7 +8,7 @@
 namespace Sundew.Packaging.Tool.Tests
 {
     using FluentAssertions;
-    using NuGet.Versioning;
+    using global::NuGet.Versioning;
     using NUnit.Framework;
     using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;

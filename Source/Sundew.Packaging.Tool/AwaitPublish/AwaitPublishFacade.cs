@@ -12,10 +12,10 @@ namespace Sundew.Packaging.Tool.AwaitPublish
     using System.IO.Abstractions;
     using System.Threading;
     using System.Threading.Tasks;
-    using NuGet.Common;
-    using NuGet.Protocol;
-    using NuGet.Protocol.Core.Types;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using global::NuGet.Common;
+    using global::NuGet.Protocol;
+    using global::NuGet.Protocol.Core.Types;
+    using Sundew.Packaging.Tool.NuGet;
 
     public class AwaitPublishFacade
     {

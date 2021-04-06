@@ -5,15 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class MsBuildProjectPackagesParser
     {

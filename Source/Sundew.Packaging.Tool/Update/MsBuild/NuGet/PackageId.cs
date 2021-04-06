@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild.NuGet
+namespace Sundew.Packaging.Tool.Update.MsBuild.NuGet
 {
     using System.Text.RegularExpressions;
     using global::NuGet.Versioning;

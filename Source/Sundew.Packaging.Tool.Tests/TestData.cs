@@ -10,8 +10,8 @@ namespace Sundew.Packaging.Tool.Tests
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using NuGet.Versioning;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using global::NuGet.Versioning;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public static class TestData
     {

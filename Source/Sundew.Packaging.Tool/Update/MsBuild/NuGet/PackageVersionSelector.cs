@@ -5,11 +5,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild.NuGet
+namespace Sundew.Packaging.Tool.Update.MsBuild.NuGet
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
     using Sundew.Base.Collections;

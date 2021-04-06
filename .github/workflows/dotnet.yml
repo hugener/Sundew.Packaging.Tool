@@ -59,7 +59,7 @@ jobs:
       if: ${{ steps.build.outputs.symbolPushSource != '' }}
       run: dotnet nuget push '**/*.snupkg' -s '${{ steps.build.outputs.symbolPushSource }}' -k '${{ steps.build.outputs.symbolApiKey }}'
     - name: 'Tag stable version'
-      if: ${{ success() &&  steps.build.outputs.stage == 'prod' }}
+      if: ${{ success() && steps.build.outputs.stage == 'prod' }}
       run: |
         git config user.email "sundew-dev@outlook.com"
         git config user.name "sundew-build"

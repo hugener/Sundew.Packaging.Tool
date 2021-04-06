@@ -15,9 +15,10 @@ namespace Sundew.Packaging.Tool
     using Sundew.Packaging.Tool.AwaitPublish;
     using Sundew.Packaging.Tool.Delete;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.NuGet;
     using Sundew.Packaging.Tool.PruneLocalSource;
     using Sundew.Packaging.Tool.Update;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public static class Program
     {
