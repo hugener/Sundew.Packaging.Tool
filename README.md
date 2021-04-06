@@ -38,6 +38,11 @@ Help
        -p | --package-ids | The packages to prune (* Wildcards supported)      | Default: *
        -s | --source      | Local source or source name to search for packages | Default: Local-Sundew
        -v | --verbose     | Verbose
+   delete/d | Delete files
+     -d | --root-directory | The directory to search for projects | Default: Current directory
+     -r | --recursive      | Specifies whether to recurse into subdirectories.
+     -v | --verbose        | Verbose
+     <files>               | The files to be deleted | Required
 ```
 
 ## **3. Examples**
@@ -52,7 +57,7 @@ Await
 1. ```spt await TransparentMoq.4.16.2``` - Awaits TransparentMoq.4.0.0 to be published to the default push source.
 2. ```spt a -s MySource TransparentMoq.4.16.2``` - Awaits TransparentMoq.4.0.0 to be published to the source named MySource.
 3. ```spt a -t 60 TransparentMoq.4.16.2``` - Awaits TransparentMoq.4.0.0 to be published to the default push source, but times out after one minute.
-4. ```spt``` used with Sundew.Packaging.Publish to ensure that another stable build does not run until packages are published https://github.com/hugener/Sundew.Generator/blob/main/azure-pipelines.yml
+4. ```spt``` used with Sundew.Packaging.Publish to ensure that another stable build does not run until packages are published https://github.com/hugener/Sundew.Generator/blob/main/.github/workflows/dotnet.yml
 
 Prune
 1. ```spt prune all``` - Prunes the all packages in the default local source.
