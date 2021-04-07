@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool
+namespace Sundew.Packaging.Tool.AwaitPublish
 {
     using System;
     using System.Text.RegularExpressions;

@@ -99,7 +99,7 @@ namespace Sundew.Packaging.Tool
         public void StartPruning(string source, IReadOnlyList<string> packageIds)
         {
             const string separator = ", ";
-            Console.WriteLine($"Pruning matches of {packageIds.AggregateToString(separator)} in: {source} ");
+            Console.WriteLine($"Pruning matches of {packageIds.JoinToString(separator)} in: {source} ");
         }
 
         public void StartingDelete(string rootedFileSpecification)

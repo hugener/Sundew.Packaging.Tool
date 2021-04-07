@@ -11,6 +11,7 @@ namespace Sundew.Packaging.Tool.Tests
     using NUnit.Framework;
     using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
+    using Sundew.Packaging.Tool.Update;
     using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     [TestFixture]

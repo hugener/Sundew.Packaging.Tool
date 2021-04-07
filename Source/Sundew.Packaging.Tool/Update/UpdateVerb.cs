@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool
+namespace Sundew.Packaging.Tool.Update
 {
     using System;
     using System.Collections.Generic;

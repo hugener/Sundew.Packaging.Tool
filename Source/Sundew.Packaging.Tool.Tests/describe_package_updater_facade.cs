@@ -55,7 +55,7 @@ namespace Sundew.Packaging.Tool.Tests
             this.actAsync = () => this.packageUpdaterFacade?.UpdatePackagesInProjectsAsync(this.arguments!);
 
             const string separator = ", ";
-            this.context[$"given projects: {TestData.GetProjects().Select(x => x.Path).AggregateToString(separator)}"] = () =>
+            this.context[$"given projects: {TestData.GetProjects().Select(x => x.Path).JoinToString(separator)}"] = () =>
             {
                 this.beforeEach = () =>
                 {

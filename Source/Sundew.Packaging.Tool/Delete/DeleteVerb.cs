@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool
+namespace Sundew.Packaging.Tool.Delete
 {
     using System.Collections.Generic;
     using Sundew.CommandLine;
