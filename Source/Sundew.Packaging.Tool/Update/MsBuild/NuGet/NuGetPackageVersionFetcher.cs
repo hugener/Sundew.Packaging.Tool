@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild.NuGet
+namespace Sundew.Packaging.Tool.Update.MsBuild.NuGet
 {
     using System;
     using System.Collections.Generic;
@@ -18,6 +18,7 @@ namespace Sundew.Packaging.Tool.MsBuild.NuGet
     using global::NuGet.Protocol.Core.Types;
     using global::NuGet.Versioning;
     using Sundew.Base.Collections;
+    using Sundew.Packaging.Tool.NuGet;
 
     public class NuGetPackageVersionFetcher : INuGetPackageVersionFetcher
     {

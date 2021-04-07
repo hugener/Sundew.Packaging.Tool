@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Diagnostics;
     using System.Threading;

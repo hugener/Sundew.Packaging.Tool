@@ -12,10 +12,9 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using NuGet.Common;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using global::NuGet.Common;
+    using Sundew.Packaging.Tool.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
 
     public class PruneAllFacade
@@ -36,32 +35,32 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
             var stopwatch = Stopwatch.StartNew();
             var source = this.nuGetSourceProvider.GetDefaultSource(allVerb.Source);
             this.purgerReporter.StartPruning(source, allVerb.PackageIds);
-            var numberDirectoriesPurged = 0;
+            var numberDirectoriesPruned = 0;
             try
             {
                 if (!UriUtility.TryCreateSourceUri(source, UriKind.Absolute).IsFile)
                 {
-                    throw new InvalidOperationException("Purge only works with local sources");
+                    throw new InvalidOperationException("Prune only works with local sources");
                 }
 
                 foreach (var packageId in allVerb.PackageIds)
                 {
-                    var regex = new Regex($"^{RegexHelper.RewritePattern(packageId)}$");
+                    var globRegex = GlobRegex.Create(packageId);
                     var directories = this.fileSystem.Directory.GetDirectories(source)
-                        .Where(x => regex.IsMatch(Path.GetFileName(x)));
+                        .Where(x => globRegex.IsMatch(Path.GetFileName(x)));
                     foreach (var directory in directories)
                     {
                         this.fileSystem.Directory.Delete(directory, true);
                         this.purgerReporter.Deleted(directory);
-                        numberDirectoriesPurged++;
+                        numberDirectoriesPruned++;
                     }
                 }
 
-                this.purgerReporter.CompletedPruning(true, numberDirectoriesPurged, stopwatch.Elapsed);
+                this.purgerReporter.CompletedPruning(true, numberDirectoriesPruned, stopwatch.Elapsed);
             }
             catch (OperationCanceledException)
             {
-                this.purgerReporter.CompletedPruning(false, numberDirectoriesPurged, stopwatch.Elapsed);
+                this.purgerReporter.CompletedPruning(false, numberDirectoriesPruned, stopwatch.Elapsed);
                 return Task.FromResult(-3);
             }
             catch (Exception e)

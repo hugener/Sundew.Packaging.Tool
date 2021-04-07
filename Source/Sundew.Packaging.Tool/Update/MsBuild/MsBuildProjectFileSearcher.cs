@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.IO;
@@ -28,7 +28,7 @@ namespace Sundew.Packaging.Tool.MsBuild
 
         public IEnumerable<string> GetProjects(string rootDirectory, IReadOnlyList<string> projects)
         {
-            var projectRegexes = projects.Count == 0 ? new[] { new Regex(MatchAllRegex) } : projects.Select(x => new Regex(RegexHelper.RewritePattern(x))).ToArray();
+            var projectRegexes = projects.Count == 0 ? new[] { new Regex(MatchAllRegex) } : projects.Select(x => GlobRegex.Create(x, false)).ToArray();
             return this.directory.EnumerateFiles(rootDirectory, AllFilesSearchPattern, SearchOption.AllDirectories)
                 .Where(x => SearchPatterns.Any(x.EndsWith) && projectRegexes.Any(regex => regex.IsMatch(x)));
         }

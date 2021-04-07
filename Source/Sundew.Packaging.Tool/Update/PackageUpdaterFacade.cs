@@ -14,8 +14,9 @@ namespace Sundew.Packaging.Tool.Update
     using System.Linq;
     using System.Threading.Tasks;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public sealed class PackageUpdaterFacade
     {
@@ -53,12 +54,15 @@ namespace Sundew.Packaging.Tool.Update
             var stopwatch = Stopwatch.StartNew();
             try
             {
+                var globalGlobRegex = string.IsNullOrEmpty(updateVerb.VersionPattern)
+                    ? null
+                    : GlobRegex.Create(updateVerb.VersionPattern);
                 foreach (var project in this.msBuildProjectFileSearcher.GetProjects(rootDirectory, updateVerb.Projects).ToList())
                 {
                     this.packageUpdaterFacadeReporter.UpdatingProject(project);
 
                     var msBuildProject = await this.msBuildProjectPackagesParser.GetPackages(project, updateVerb.PackageIds);
-                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, updateVerb.PinnedNuGetVersion, rootDirectory, updateVerb.AllowPrerelease, updateVerb.Source);
+                    var packageUpdates = await this.packageVersionSelector.GetPackageVersions(msBuildProject.PossiblePackageUpdates, globalGlobRegex, rootDirectory, updateVerb.AllowPrerelease, updateVerb.Source);
                     var result = this.packageVersionUpdater.TryUpdateAsync(msBuildProject, packageUpdates);
                     if (result)
                     {

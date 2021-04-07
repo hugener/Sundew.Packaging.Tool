@@ -10,13 +10,15 @@ namespace Sundew.Packaging.Tool
     using System;
     using System.IO.Abstractions;
     using System.Threading.Tasks;
-    using Sundew.Base.Computation;
+    using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
     using Sundew.Packaging.Tool.AwaitPublish;
+    using Sundew.Packaging.Tool.Delete;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.NuGet;
     using Sundew.Packaging.Tool.PruneLocalSource;
     using Sundew.Packaging.Tool.Update;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public static class Program
     {
@@ -32,6 +34,7 @@ namespace Sundew.Packaging.Tool
                     builder.AddVerb(new AllVerb(), ExecutePruneAllAsync);
                     //// builder.AddVerb(new NewestPrereleasesPruneModeVerb(), ExecutePruneNewestPrereleasesAsync);
                 });
+                commandLineParser.AddVerb(new DeleteVerb(), ExecuteDeleteAsync);
                 var result = await commandLineParser.ParseAsync(Environment.CommandLine, 1);
                 if (!result)
                 {
@@ -45,6 +48,12 @@ namespace Sundew.Packaging.Tool
                 Console.WriteLine(e.ToString());
                 return -1;
             }
+        }
+
+        private static async ValueTask<Result<int, ParserError<int>>> ExecuteDeleteAsync(DeleteVerb deleteVerb)
+        {
+            var deleteFacade = new DeleteFacade(new FileSystem(), new ConsoleReporter(deleteVerb.Verbose));
+            return Result.Success(await deleteFacade.Delete(deleteVerb));
         }
 
         private static async ValueTask<Result<int, ParserError<int>>> ExecuteAwaitPublishAsync(AwaitPublishVerb awaitPublishVerb)

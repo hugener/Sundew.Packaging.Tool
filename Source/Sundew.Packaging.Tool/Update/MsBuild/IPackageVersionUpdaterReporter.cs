@@ -1,14 +1,14 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MsBuildProject.cs" company="Hukano">
+// <copyright file="IPackageVersionUpdaterReporter.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
-    using System.Collections.Generic;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
-
-    public record MsBuildProject(string Path, string ProjectContent, IReadOnlyList<PackageUpdateSuggestion> PossiblePackageUpdates);
+    public interface IPackageVersionUpdaterReporter
+    {
+        void ProcessedProject(string projectPath, bool wasModified);
+    }
 }

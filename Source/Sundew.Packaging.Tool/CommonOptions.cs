@@ -8,14 +8,12 @@
 namespace Sundew.Packaging.Tool
 {
     using System;
-    using System.Text.RegularExpressions;
     using Sundew.CommandLine;
 
     public class CommonOptions
     {
         internal const string LocalSundewName = "Local-Sundew";
         internal const string VersionGroupName = "Version";
-        internal static readonly Regex PackageIdAndVersionRegex = new(@"(?: |\.)(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
 
         public static void AddVerbose(IArgumentsBuilder argumentsBuilder, bool verbose, Action<bool> setValue)
         {

@@ -9,8 +9,8 @@ namespace Sundew.Packaging.Tool.Update
 {
     using System;
     using System.Collections.Generic;
-    using Sundew.Packaging.Tool.MsBuild;
     using Sundew.Packaging.Tool.Reporting;
+    using Sundew.Packaging.Tool.Update.MsBuild;
 
     public interface IPackageUpdaterFacadeReporter : IExceptionReporter
     {

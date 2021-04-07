@@ -5,13 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
-    using Sundew.Base.Computation;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Base.Primitives.Computation;
     using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class PackageVersionUpdater
     {
@@ -30,7 +30,7 @@ namespace Sundew.Packaging.Tool.MsBuild
             var wasModified = false;
             foreach (var packageId in packageUpdates)
             {
-                var regex = new Regex(string.Format(MsBuildProjectPackagesParser.PackageReferenceRegex, RegexHelper.RewritePattern(packageId.Id)));
+                var regex = new Regex(string.Format(MsBuildProjectPackagesParser.PackageReferenceRegex, GlobRegex.ConvertToRegexPattern(packageId.Id).Expression));
                 fileContent = regex.Replace(
                     fileContent,
                     m =>

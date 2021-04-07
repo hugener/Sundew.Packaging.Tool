@@ -9,17 +9,17 @@ namespace Sundew.Packaging.Tool
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
-    using NuGet.Versioning;
+    using global::NuGet.Versioning;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Packaging.Tool.AwaitPublish;
-    using Sundew.Packaging.Tool.MsBuild;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.Delete;
     using Sundew.Packaging.Tool.PruneLocalSource;
     using Sundew.Packaging.Tool.Update;
+    using Sundew.Packaging.Tool.Update.MsBuild;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
-    public class ConsoleReporter : IPackageVersionUpdaterReporter, IPackageUpdaterFacadeReporter, IPackageVersionSelectorReporter, IPackageRestorerReporter, IAwaitPublishFacadeReporter, IPruneReporter
+    public class ConsoleReporter : IPackageVersionUpdaterReporter, IPackageUpdaterFacadeReporter, IPackageVersionSelectorReporter, IPackageRestorerReporter, IAwaitPublishFacadeReporter, IPruneReporter, IDeleteFacadeReporter
     {
         private const string ModifiedVerbose = "Updated";
         private const string Modified = "*";
@@ -41,7 +41,7 @@ namespace Sundew.Packaging.Tool
 
         public void StartingPackageUpdate(string rootDirectory)
         {
-            Console.WriteLine($"Updating package in: {rootDirectory}");
+            Console.WriteLine($"Updating packages in: {rootDirectory}");
         }
 
         public void UpdatingProject(string project)
@@ -99,15 +99,34 @@ namespace Sundew.Packaging.Tool
         public void StartPruning(string source, IReadOnlyList<string> packageIds)
         {
             const string separator = ", ";
-            Console.WriteLine($"Pruning matches of {packageIds.AggregateToStringBuilder((builder, s) => builder.Append(s).Append(separator), builder => builder.ToStringFromEnd(separator.Length))} in: {source} ");
+            Console.WriteLine($"Pruning matches of {packageIds.JoinToString(separator)} in: {source} ");
         }
 
-        public void Deleted(string directory)
+        public void StartingDelete(string rootedFileSpecification)
         {
             if (this.verbose)
             {
-                Console.WriteLine($"  Deleted {directory}");
+                Console.WriteLine($"Deleting {rootedFileSpecification}");
             }
+        }
+
+        public void Deleted(string file)
+        {
+            if (this.verbose)
+            {
+                Console.WriteLine($"  Deleted {file}");
+            }
+        }
+
+        public void CompletedDeleting(bool wasSuccessful, int numberFilesDeleted, TimeSpan stopwatchElapsed)
+        {
+            if (wasSuccessful)
+            {
+                Console.WriteLine($"Deleted {numberFilesDeleted} file(s)");
+                return;
+            }
+
+            Console.WriteLine($"Canceled deleting... ({numberFilesDeleted} files deleted)");
         }
 
         public void CompletedPruning(bool wasSuccessful, int numberDirectoriesPurged, TimeSpan stopwatchElapsed)

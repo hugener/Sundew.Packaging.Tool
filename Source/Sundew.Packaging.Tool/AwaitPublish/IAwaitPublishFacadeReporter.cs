@@ -8,8 +8,8 @@
 namespace Sundew.Packaging.Tool.AwaitPublish
 {
     using System;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.Reporting;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public interface IAwaitPublishFacadeReporter : IExceptionReporter
     {

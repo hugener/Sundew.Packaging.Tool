@@ -14,14 +14,14 @@ namespace Sundew.Packaging.Tool.Tests
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading;
+    using global::NuGet.Versioning;
     using Moq;
-    using NuGet.Versioning;
     using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Packaging.Tool.Diagnostics;
-    using Sundew.Packaging.Tool.MsBuild;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.Update;
+    using Sundew.Packaging.Tool.Update.MsBuild;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class describe_package_updater_facade : nspec
     {
@@ -54,7 +54,8 @@ namespace Sundew.Packaging.Tool.Tests
 
             this.actAsync = () => this.packageUpdaterFacade?.UpdatePackagesInProjectsAsync(this.arguments!);
 
-            this.context[$"given projects: {TestData.GetProjects().AggregateToStringBuilder((builder, data) => builder.Append(data.Path).Append(',').Append(' '), builder => builder.ToStringFromEnd(2))}"] = () =>
+            const string separator = ", ";
+            this.context[$"given projects: {TestData.GetProjects().Select(x => x.Path).JoinToString(separator)}"] = () =>
             {
                 this.beforeEach = () =>
                 {
@@ -144,7 +145,7 @@ namespace Sundew.Packaging.Tool.Tests
 
                         this.context["and pins Sundew.Base version to 6.0.0"] = () =>
                         {
-                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", NuGetVersion.Parse("6.0.0")) }, this.arguments.Projects.ToList());
+                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", "6.0.0") }, this.arguments.Projects.ToList());
 
                             TestData.SundewCommandLineProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
                                 () => this.fileSystem?.File.Verify(
@@ -187,7 +188,7 @@ namespace Sundew.Packaging.Tool.Tests
 
                         this.context["and pins Sundew.Base version to 5.1 latest prerelease"] = () =>
                         {
-                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", NuGetVersion.Parse("5.1"), true) }, this.arguments.Projects.ToList(), allowPrerelease: true);
+                            this.beforeEach = () => this.arguments = new UpdateVerb(new List<PackageId> { new("Sundew.Base", "5.1.*") }, this.arguments.Projects.ToList(), allowPrerelease: true);
 
                             TestData.SundewCommandLineProject.Assert(x => this.it[$@"should write to: {x.Path}"] =
                                 () => this.fileSystem?.File.Verify(

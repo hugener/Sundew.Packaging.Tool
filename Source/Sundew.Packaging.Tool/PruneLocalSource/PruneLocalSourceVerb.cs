@@ -5,10 +5,9 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool
+namespace Sundew.Packaging.Tool.PruneLocalSource
 {
     using Sundew.CommandLine;
-    using Sundew.Packaging.Tool.PruneLocalSource;
 
     public class PruneLocalSourceVerb : IVerb
     {

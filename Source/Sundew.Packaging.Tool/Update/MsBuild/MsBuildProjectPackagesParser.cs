@@ -5,15 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool.MsBuild
+namespace Sundew.Packaging.Tool.Update.MsBuild
 {
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using global::NuGet.Versioning;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
     using Sundew.Packaging.Tool.RegularExpression;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class MsBuildProjectPackagesParser
     {
@@ -21,7 +21,8 @@ namespace Sundew.Packaging.Tool.MsBuild
         private const string IdGroupName = "Id";
         private const string VersionGroupName = "Version";
         private readonly IFile file;
-        private readonly Dictionary<string, Regex> regexCache = new();
+        private readonly Dictionary<string, Regex> projectRegexCache = new();
+        private readonly Dictionary<string, GlobRegex> versionRegexCache = new();
 
         public MsBuildProjectPackagesParser(IFile file)
         {
@@ -34,16 +35,23 @@ namespace Sundew.Packaging.Tool.MsBuild
             var absolutePackageIds = new List<PackageUpdateSuggestion>();
             foreach (var packageId in packageIds)
             {
-                var regexPattern = RegexHelper.RewritePattern(packageId.Id);
-                if (!this.regexCache.TryGetValue(regexPattern, out var regex))
+                if (!this.projectRegexCache.TryGetValue(packageId.Id, out var projectRegex))
                 {
-                    regex = new Regex(string.Format(PackageReferenceRegex, regexPattern));
-                    this.regexCache.Add(regexPattern, regex);
+                    var (expression, _) = GlobRegex.ConvertToRegexPattern(packageId.Id);
+                    projectRegex = new Regex(string.Format(PackageReferenceRegex, expression));
+                    this.projectRegexCache.Add(packageId.Id, projectRegex);
                 }
 
-                foreach (Match match in regex.Matches(projectContent))
+                GlobRegex? versionRegex = null;
+                if (!string.IsNullOrEmpty(packageId.VersionPattern) && !this.versionRegexCache.TryGetValue(packageId.VersionPattern, out versionRegex))
                 {
-                    absolutePackageIds.Add(new PackageUpdateSuggestion(match.Groups[IdGroupName].Value, NuGetVersion.Parse(match.Groups[VersionGroupName].Value), packageId.NuGetVersion, packageId.UseMajorMinorSearchMode));
+                    versionRegex = GlobRegex.Create(packageId.VersionPattern);
+                    this.versionRegexCache.Add(packageId.VersionPattern, versionRegex);
+                }
+
+                foreach (Match match in projectRegex.Matches(projectContent))
+                {
+                    absolutePackageIds.Add(new PackageUpdateSuggestion(match.Groups[IdGroupName].Value, NuGetVersion.Parse(match.Groups[VersionGroupName].Value), versionRegex));
                 }
             }
 

@@ -5,35 +5,36 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sundew.Packaging.Tool
+namespace Sundew.Packaging.Tool.Update
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text.RegularExpressions;
-    using NuGet.Versioning;
     using Sundew.CommandLine;
-    using Sundew.Packaging.Tool.MsBuild.NuGet;
+    using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
     public class UpdateVerb : IVerb
     {
-        private const string PatchGroupName = "Patch";
-        private static readonly Regex VersionRegex = new(@"(?<Version>(?:\d+\.\d+(?<Patch>\.\d+)?).*)");
+        private const string Star = "*";
+        private const string VersionRegexText = @"(?<Version>[\d\.\*]+(?:(?:-(?<Prerelease>[^\.\s]+))|$))";
+        private static readonly Regex PackageIdAndVersionRegex = new(@$"(?: |\.){VersionRegexText}");
+        private static readonly Regex VersionRegex = new(VersionRegexText);
         private readonly List<PackageId> packageIds;
         private readonly List<string> projects;
         private bool useLocalSource;
 
         public UpdateVerb()
-        : this(new List<PackageId> { new("*") }, new List<string> { "*" })
+        : this(new List<PackageId> { new(Star) }, new List<string> { Star })
         {
         }
 
-        public UpdateVerb(List<PackageId> packageIds, List<string> projects, string? source = null, PinnedNuGetVersion? pinnedNuGetVersion = null, string? rootDirectory = null, bool allowPrerelease = false, bool verbose = false, bool useLocalSource = false, bool skipRestore = false)
+        public UpdateVerb(List<PackageId> packageIds, List<string> projects, string? source = null, string? versionPattern = null, string? rootDirectory = null, bool allowPrerelease = false, bool verbose = false, bool useLocalSource = false, bool skipRestore = false)
         {
             this.packageIds = packageIds;
             this.projects = projects;
             this.Source = source;
-            this.PinnedNuGetVersion = pinnedNuGetVersion;
+            this.VersionPattern = versionPattern;
             this.RootDirectory = rootDirectory;
             this.AllowPrerelease = allowPrerelease;
             this.Verbose = verbose;
@@ -55,7 +56,7 @@ namespace Sundew.Packaging.Tool
 
         public string? Source { get; private set; }
 
-        public PinnedNuGetVersion? PinnedNuGetVersion { get; private set; }
+        public string? VersionPattern { get; private set; }
 
         public string? RootDirectory { get; private set; }
 
@@ -83,7 +84,7 @@ namespace Sundew.Packaging.Tool
             argumentsBuilder.AddOptionalList("id", "package-ids", this.packageIds, this.SerializePackageId, this.DeserializePackageId, @$"The package(s) to update. (* Wildcards supported){Environment.NewLine}Format: Id[.Version] or ""Id[ Version]"" (Pinning version is optional)");
             argumentsBuilder.AddOptionalList("p", "projects", this.projects, "The project(s) to update (* Wildcards supported)");
             argumentsBuilder.AddOptional("s", "source", () => this.Source, s => this.Source = s, @"The source or source name to search for packages (""All"" supported)", defaultValueText: "NuGet.config: defaultPushSource");
-            argumentsBuilder.AddOptional(null, "version", () => this.SerializeVersion(this.PinnedNuGetVersion), s => this.PinnedNuGetVersion = this.DeserializeVersion(s), "Pins the NuGet package version.", defaultValueText: "Latest version");
+            argumentsBuilder.AddOptional(null, "version", () => this.VersionPattern, s => this.VersionPattern = this.DeserializeVersion(s), "The NuGet package version (* Wildcards supported).", defaultValueText: "Latest version");
             CommonOptions.AddRootDirectory(argumentsBuilder, () => this.RootDirectory, s => this.RootDirectory = s);
             argumentsBuilder.AddSwitch("pr", "prerelease", this.AllowPrerelease, b => this.AllowPrerelease = b, "Allow updating to latest prerelease version");
             CommonOptions.AddVerbose(argumentsBuilder, this.Verbose, b => this.Verbose = b);
@@ -91,37 +92,12 @@ namespace Sundew.Packaging.Tool
             argumentsBuilder.AddSwitch("sr", "skip-restore", this.SkipRestore, b => this.SkipRestore = b, "Skips a dotnet restore command after package update.");
         }
 
-        private static string SerializeVersion(NuGetVersion pinnedNuGetVersion, bool? useMajorMinorSearchMode)
-        {
-            if (useMajorMinorSearchMode.GetValueOrDefault(false))
-            {
-                return $"{pinnedNuGetVersion.Major}.{pinnedNuGetVersion.Minor}{GetRelease(pinnedNuGetVersion)}";
-            }
-
-            return pinnedNuGetVersion.ToString();
-        }
-
-        private static string GetRelease(NuGetVersion pinnedNuGetVersion)
-        {
-            return string.IsNullOrEmpty(pinnedNuGetVersion.Release) ? string.Empty : $"-{pinnedNuGetVersion.Release}";
-        }
-
-        private string? SerializeVersion(PinnedNuGetVersion? pinnedNuGetVersion)
-        {
-            if (pinnedNuGetVersion == null)
-            {
-                return null;
-            }
-
-            return SerializeVersion(pinnedNuGetVersion.NuGetVersion, pinnedNuGetVersion.UseMajorMinorSearchMode);
-        }
-
-        private PinnedNuGetVersion DeserializeVersion(string pinnedNuGetVersion)
+        private string? DeserializeVersion(string pinnedNuGetVersion)
         {
             var match = VersionRegex.Match(pinnedNuGetVersion);
             if (match.Success)
             {
-                return new PinnedNuGetVersion(NuGetVersion.Parse(pinnedNuGetVersion), !match.Groups[PatchGroupName].Success);
+                return match.Value;
             }
 
             throw new ArgumentException($"Invalid version: {pinnedNuGetVersion}", nameof(pinnedNuGetVersion));
@@ -129,9 +105,9 @@ namespace Sundew.Packaging.Tool
 
         private string SerializePackageId(PackageId id, CultureInfo cultureInfo)
         {
-            if (id.NuGetVersion != null)
+            if (id.VersionPattern != null)
             {
-                return $"{id.Id}.{SerializeVersion(id.NuGetVersion, id.UseMajorMinorSearchMode)}";
+                return $"{id.Id}.{id.VersionPattern}";
             }
 
             return id.Id;
@@ -139,13 +115,13 @@ namespace Sundew.Packaging.Tool
 
         private PackageId DeserializePackageId(string id, CultureInfo cultureInfo)
         {
-            var match = CommonOptions.PackageIdAndVersionRegex.Match(id);
+            var match = PackageIdAndVersionRegex.Match(id);
             if (match.Success)
             {
                 var versionGroup = match.Groups[CommonOptions.VersionGroupName];
                 if (versionGroup.Success)
                 {
-                    return new PackageId(id.Substring(0, versionGroup.Index - 1), NuGetVersion.Parse(versionGroup.Value), !match.Groups[PatchGroupName].Success);
+                    return new PackageId(id.Substring(0, versionGroup.Index - 1), versionGroup.Value);
                 }
             }
 
