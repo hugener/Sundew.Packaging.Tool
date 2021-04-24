@@ -26,18 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuGet.Protocol" Version="5.9.0" />
-    <PackageReference Include="NuGet.Versioning" Version="5.9.0" />
+    <PackageReference Include="NuGet.Protocol" Version="5.9.1" />
+    <PackageReference Include="NuGet.Versioning" Version="5.9.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Sundew.CommandLine" Version="6.0.3" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="5.1.0">
+    <PackageReference Include="Sundew.CommandLine" Version="7.0.0" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.28" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.29" />
   </ItemGroup>
 
   <ItemGroup>
