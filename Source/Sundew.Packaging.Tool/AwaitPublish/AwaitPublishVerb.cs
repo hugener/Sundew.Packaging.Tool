@@ -37,7 +37,7 @@ namespace Sundew.Packaging.Tool.AwaitPublish
 
         public string? ShortName { get; } = "a";
 
-        public string HelpText { get; } = "awaits the specified package to be published";
+        public string HelpText { get; } = "Awaits the specified package to be published";
 
         public PackageIdAndVersion PackageIdAndVersion { get; private set; }
 

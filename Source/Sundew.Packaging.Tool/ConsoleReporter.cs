@@ -10,7 +10,6 @@ namespace Sundew.Packaging.Tool
     using System;
     using System.Collections.Generic;
     using global::NuGet.Versioning;
-    using Sundew.Base.Collections;
     using Sundew.Base.Text;
     using Sundew.Packaging.Tool.AwaitPublish;
     using Sundew.Packaging.Tool.Delete;
@@ -19,7 +18,14 @@ namespace Sundew.Packaging.Tool
     using Sundew.Packaging.Tool.Update.MsBuild;
     using Sundew.Packaging.Tool.Update.MsBuild.NuGet;
 
-    public class ConsoleReporter : IPackageVersionUpdaterReporter, IPackageUpdaterFacadeReporter, IPackageVersionSelectorReporter, IPackageRestorerReporter, IAwaitPublishFacadeReporter, IPruneReporter, IDeleteFacadeReporter
+    public class ConsoleReporter :
+        IPackageVersionUpdaterReporter,
+        IPackageUpdaterFacadeReporter,
+        IPackageVersionSelectorReporter,
+        IPackageRestorerReporter,
+        IAwaitPublishFacadeReporter,
+        IPruneReporter,
+        IDeleteFacadeReporter
     {
         private const string ModifiedVerbose = "Updated";
         private const string Modified = "*";

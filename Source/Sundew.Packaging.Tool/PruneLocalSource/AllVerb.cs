@@ -38,7 +38,7 @@ namespace Sundew.Packaging.Tool.PruneLocalSource
 
         public string? ShortName => default;
 
-        public string HelpText { get; } = "prune the specified local source for all packages";
+        public string HelpText { get; } = "Prune the specified local source for all packages";
 
         public void Configure(IArgumentsBuilder argumentsBuilder)
         {
